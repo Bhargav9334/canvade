@@ -15,6 +15,7 @@ import {
   Heart,
   Bell,
   Share2,
+  ArrowLeftRight,
 } from "lucide-react";
 
 const COURSE_DATA = [
@@ -82,7 +83,7 @@ export default function RecommendedCourses() {
   const scrollRef = useRef(null);
   const [openMenuId, setOpenMenuId] = useState(null);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
-
+const [notified, setNotified] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 300);
     return () => clearTimeout(t);
@@ -139,7 +140,7 @@ export default function RecommendedCourses() {
   const menuItems = [
     {
       label: "Compare",
-      icon: <Scale size={16} />,
+      icon: <ArrowLeftRight size={16} />,
       onClick: () => console.log("Compare"),
     },
     {
@@ -148,15 +149,22 @@ export default function RecommendedCourses() {
       onClick: () => console.log("Enquiry"),
     },
     {
-      label: "Wishlist",
-      icon: <Heart size={16} />,
-      onClick: () => console.log("Wishlist"),
-    },
-    {
-      label: "Notify When Active",
-      icon: <Bell size={16} />,
-      onClick: () => console.log("Notify"),
-    },
+  label: "Wishlist",
+  icon: <Heart size={16} />,
+  onClick: () => {
+    navigate("/cart");
+  },
+},
+   {
+  id: "notify",
+  label: notified
+    ? "Notification Enabled"
+    : "Notify When Active",
+  icon: <Bell size={16} />,
+  onClick: () => {
+    setNotified((prev) => !prev);
+  },
+},
     {
       label: "Share",
       icon: <Share2 size={16} />,
@@ -168,6 +176,14 @@ export default function RecommendedCourses() {
       onClick: () => console.log("Similar Courses"),
     },
   ];
+const handleEnroll = (course) => {
+  localStorage.setItem(
+    "checkoutCourse",
+    JSON.stringify(course)
+  );
+
+  navigate("/checkout?step=payment");
+};
 
   return (
     <section className="px-4 md:px-8 lg:px-12 py-12 bg-white overflow-hidden">
@@ -315,8 +331,13 @@ export default function RecommendedCourses() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button className="bg-[#E5E5E5] hover:bg-emerald-600 hover:text-white text-gray-700 text-[12px] font-semibold px-3 md:px-4 py-2 rounded-md flex items-center gap-2 transition-all">
-                        Enroll
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    handleEnroll(item);
+  }}
+  className="bg-[#E5E5E5] hover:bg-emerald-600 hover:text-white text-gray-700 text-[12px] font-semibold px-3 md:px-4 py-2 rounded-md flex items-center gap-2 transition-all"
+>Enroll
                         <span className="hidden sm:inline-flex w-4 h-4 rounded-md bg-[#484848] text-white items-center justify-center align-middle">
                           <ArrowRight className="w-2.5 h-2.5" />
                         </span>
@@ -365,10 +386,21 @@ export default function RecommendedCourses() {
                   menuItem.onClick();
                   setOpenMenuId(null);
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition"
+ className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
-                {menuItem.icon}
-                <span>{menuItem.label}</span>
+                <span
+  className={
+    menuItem.id === "notify" && notified
+      ? "text-emerald-600"
+      : "text-gray-500"
+  }
+>
+  {menuItem.icon}
+</span>
+
+<span className="text-gray-700">
+  {menuItem.label}
+</span>
               </button>
             ))}
           </div>,

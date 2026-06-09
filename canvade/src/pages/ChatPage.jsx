@@ -255,6 +255,7 @@ const ChatPage = () => {
     <>
       <Navbar />
       <div className="chat-root">
+        <div className="chat-outer-wrap">
         <div className="chat-inner">
           {showSidebar && (
             <div className="sidebar">
@@ -437,7 +438,7 @@ const ChatPage = () => {
               )}
             </div>
           )}
-
+  </div>
         </div>
       </div>
     </>
