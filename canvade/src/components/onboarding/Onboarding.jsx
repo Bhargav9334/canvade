@@ -1,8 +1,6 @@
 import { useState } from "react";
 import Step1 from "./Step1";
-import Step2 from "./Step2";
-import Step3 from "./Step3"; 
-import Step4 from "./Step4"; 
+import OnboardingSteps from "./OnboardingSteps"; // merged Step2 + Step3 + Step4
 import Canvadelogin from "../../pages/Canvadelogin";
 import Signup from "../Auth/Signup";
 
@@ -29,39 +27,42 @@ export default function Onboarding({ initialFlow }) {
 
   return (
     <div className="w-full max-w-[400px] flex flex-col items-center">
-      
+
+      {/* Progress dots — step 3 = OnboardingSteps (which has 3 internal sub-steps) */}
       <div className="mb-8 flex justify-center gap-2">
-        {[1, 2, 3, 4, 5].map((s) => (
-          <div 
-            key={s} 
+        {[1, 2, 3].map((s) => (
+          <div
+            key={s}
             className={`h-1.5 rounded-full transition-all duration-300 ${
               step === s ? "bg-emerald-500 w-8" : "bg-gray-200 w-4"
-            }`} 
+            }`}
           />
         ))}
       </div>
 
       {step === 1 && <Step1 next={handleNext} onSignupClick={triggerSignup} />}
-      
+
       {step === 2 && (
         userChoice.flow === "signup" ? (
-          <Signup 
-            onSignupSuccess={() => setStep(3)} 
-            switchToLogin={() => setUserChoice({ ...userChoice, flow: "login" })} 
+          <Signup
+            onSignupSuccess={() => setStep(3)}
+            switchToLogin={() => setUserChoice({ ...userChoice, flow: "login" })}
           />
         ) : (
-          <Canvadelogin 
-            onLoginSuccess={() => setStep(3)} 
-            onSignUpClick={triggerSignup} 
+          <Canvadelogin
+            onLoginSuccess={() => setStep(3)}
+            onSignUpClick={triggerSignup}
           />
         )
       )}
 
-      {step === 3 && <Step2 next={handleNext} back={handleBack} />}
-
-      {step === 4 && <Step3 next={handleNext} back={handleBack} />}
-
-      {step === 5 && <Step4 back={handleBack} formData={formData} />}
+      {/* Steps 2 + 3 + 4 merged — OnboardingSteps handles its own internal navigation */}
+      {step === 3 && (
+        <OnboardingSteps
+          back={handleBack}
+          parentFormData={formData}
+        />
+      )}
 
     </div>
   );

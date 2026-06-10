@@ -383,15 +383,7 @@ export default function InstituteProfileForm() {
     // ✅ Sirf #fff (white) background — grey hata diya
     <div style={{ minHeight:'100vh', fontFamily:'system-ui, sans-serif' }}>
 
-        {/* Heading */}
-        <div style={{ marginBottom:28 }}>
-          <h1 style={{ fontSize:32, fontWeight:800, color:'#111827', margin:0 }}>
-            Create a <span style={{ color:'#10b981' }}>New Course</span>
-          </h1>
-          <p style={{ color:'#9ca3af', margin:'8px 0 0', fontSize:14 }}>
-            Fill in the details below to publish your course listing.
-          </p>
-        </div>
+        
 
         {activeTab === 'basic' && (
           <div>

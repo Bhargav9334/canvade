@@ -2,7 +2,7 @@ import { useState } from "react";
 import RIGHT_BG_SRC from "../../public/bg.png";
 import ARCH_IMG_SRC from "../../public/institute.jpg";
 import LOGO_SRC from "../../public/canvade.png";
-
+import { useNavigate } from "react-router-dom";
 const CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
 const genCaptcha = () =>
   Array.from(
@@ -16,13 +16,75 @@ export default function CanvadeLogin({ onLoginSuccess, onSignUpClick }) {
   const [showPass, setShowPass] = useState(false);
   const [captchaCode, setCaptchaCode] = useState("88538");
   const [captchaInput, setCaptchaInput] = useState("");
+const navigate = useNavigate();
+const [loading, setLoading] = useState(false);
+  const handleLoginSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    if (onLoginSuccess) {
-      onLoginSuccess();
+  try {
+    setLoading(true);
+
+    if (!loginId || !password) {
+      alert("Please enter email and password");
+      return;
     }
-  };
+
+    if (
+      captchaInput.trim().toLowerCase() !==
+      captchaCode.trim().toLowerCase()
+    ) {
+      alert("Invalid captcha");
+      return;
+    }
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/users/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginId,
+          password,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Login failed");
+    }
+
+    // Save token
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+
+    // Save user
+    if (data.user) {
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+    }
+
+    console.log("Login Success:", data);
+
+    // Optional callback
+    onLoginSuccess?.();
+
+    // Redirect
+    navigate("/admin/dashboard");
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full max-w-[360px] sm:max-w-[600px] px-4 animate-in fade-in duration-500">
@@ -124,11 +186,12 @@ export default function CanvadeLogin({ onLoginSuccess, onSignUpClick }) {
         </div>
 
         <button
-          type="submit"
-          className="w-full rounded-md bg-[#24977a] py-3 text-base font-semibold text-white transition hover:bg-[#1d7a63] active:scale-[0.99]"
-        >
-          Login to Your Account
-        </button>
+  type="submit"
+  disabled={loading}
+  className="w-full rounded-md bg-[#24977a] py-3 text-base font-semibold text-white disabled:opacity-70"
+>
+  {loading ? "Logging in..." : "Login to Your Account"}
+</button>
       </form>
 
       <div className="my-8 flex items-center gap-3">
@@ -159,7 +222,7 @@ export default function CanvadeLogin({ onLoginSuccess, onSignUpClick }) {
             onClick={onSignUpClick}
             className="rounded-full bg-[#24977a] px-6 py-1.5 text-xs font-bold text-white transition hover:bg-[#1d7a63]"
           >
-            Sign in
+            Sign Up
           </button>
         </div>
 

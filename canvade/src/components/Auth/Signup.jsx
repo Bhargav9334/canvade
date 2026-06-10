@@ -2,7 +2,7 @@ import { useState } from "react";
 import LOGO_SRC from "../../../public/canvade.png";
 import { FiEye, FiEyeOff, FiRefreshCw } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
-
+import { useNavigate } from "react-router-dom";
 const handleGoogleSignup = () => {
   console.log("Google signup clicked");
 };
@@ -16,18 +16,24 @@ export default function Signup({ switchToLogin, onSignupSuccess }) {
   const [captcha, setCaptcha] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+const navigate = useNavigate();
+ const handleSignup = () => {
+  if (!name || !email || !password || !confirm || !captcha) {
+    alert("Please fill in all required fields including Captcha.");
+    return;
+  }
 
-  const handleSignup = () => {
-    if (!name || !email || !password || !confirm || !captcha) {
-      alert("Please fill in all required fields including Captcha.");
-      return;
-    }
-    if (password !== confirm) {
-      alert("Passwords do not match.");
-      return;
-    }
-    if (onSignupSuccess) onSignupSuccess();
-  };
+  if (password !== confirm) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  if (onSignupSuccess) {
+    onSignupSuccess();
+  }
+
+  navigate("/admin/dashboard");
+};
 
   const inputCls =
     "w-full rounded-md border border-gray-300 px-3 py-2 text-[13px] font-normal outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-50";
